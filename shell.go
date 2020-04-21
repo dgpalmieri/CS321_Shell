@@ -29,6 +29,20 @@ func parseInput(input string) (error, bool) {
     return err, exit
 }
 
+func appendHistory(str string) {
+    fstream, err := os.OpenFile(".histfile", os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+
+    defer fstream.Close()
+
+    if _, err := fstream.WriteString(str + "\n"); err != nil {
+        fmt.Println("Error:", err)
+    }
+
+}
+
 func main() {
     reader := bufio.NewReader(os.Stdin)
 
@@ -44,6 +58,7 @@ func main() {
         input, _ := reader.ReadString('\n')
         input = strings.TrimSuffix(input, "\n")
 
+        appendHistory(input)
         err, exit := parseInput(input)
 
          if exit {
