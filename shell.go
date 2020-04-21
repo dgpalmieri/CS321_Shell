@@ -33,7 +33,12 @@ func main() {
     reader := bufio.NewReader(os.Stdin)
 
     for {
-        fmt.Println("----- /home/dgpalmieri/Documents/Operating_Systems/Project_Shell ------")
+        pwdCommand := exec.Command("pwd")
+        byteSlice, _ := pwdCommand.Output()
+        workdir := string(byteSlice)
+        workdir = strings.TrimSuffix(workdir, "\n")
+
+        fmt.Println("-----", workdir, "-----")
         fmt.Print("Hello, user: ")
 
         input, _ := reader.ReadString('\n')
