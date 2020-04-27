@@ -12,7 +12,17 @@ import (
     "os/exec"
 )
 
-func changeDirectory(wordArray []string){
+func changeDirectory(wordArray []string) (error) {
+    var err (error) = nil
+
+    if len(wordArray) == 1 {
+        err = os.Chdir("/home")
+    }
+    if len(wordArray) == 2 {
+        err = os.Chdir(wordArray[1])
+    }
+
+    return err
 
 }
 
@@ -23,7 +33,10 @@ func executeInput(inputArray [][]string) (error) {
     for _, slice := range(inputArray) {
         fmt.Println("slice:", slice)
         if slice[0] == "cd" {
-            changeDirectory(slice)
+            err = changeDirectory(slice)
+            if err != nil {
+                break
+            }
             continue
         }
 
@@ -82,7 +95,10 @@ func parseInput(input string) (error, bool) {
             exit = true
             break
         }
-        if field == "cd" || field == "|" || field == "&" {
+        if field == "cd" {
+            parsedSlice = append(parsedSlice, inputArray[index: index + 2])
+        }
+        if field == "|" || field == "&" {
             parsedSlice = append(parsedSlice,inputArray[startIndex:index + 1])
             startIndex = index + 1
         }
