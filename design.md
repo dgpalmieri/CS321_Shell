@@ -44,5 +44,5 @@
     - [x] exit
 - [x] History logging
 - [ ] Input Parsing
-- [ ] Foreground and Background execution (thread safety warning?)
+- [x] Foreground and Background execution (thread safety warning?)
 
