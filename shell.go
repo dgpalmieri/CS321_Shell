@@ -29,8 +29,7 @@ func executeInput(inputArray [][]string) (error) {
     var err (error) = nil
     var andIndexList = []int{}
     andIndexList = append(andIndexList, -1)
-    var pipeIndex = []int{}
-    //pipeIndex = append(pipeIndex, 0)
+    var pipeIndexList = []int{}
 
     for _, slice := range(inputArray) {
         fmt.Println("slice:", slice)
@@ -59,43 +58,140 @@ func executeInput(inputArray [][]string) (error) {
                 andIndexList = append(andIndexList, index)
             }
             if item == "|" {
-                pipeIndex = append(pipeIndex, index)
+                pipeIndexList = append(pipeIndexList, index)
             }
         }
 
-        if len(andIndexList) > 1 { // ls && ls
-            fmt.Println("andIndexList:", andIndexList)
+        if len(andIndexList) > 1 {
             var end = 0
             var args = 0
             for index, andIndex := range(andIndexList) {
-                fmt.Println("End:", end, "len:", len(andIndexList))
                 if end < len(andIndexList) - 1{
                     end = andIndexList[index + 1]
                 } else {
                     end = len(slice)
                 }
                 args = andIndex + 2
-                fmt.Println("args:", args, "end:", end)
                 if args > len(slice) - 1 {
                     args = end
                 }
                 command := exec.Command(slice[andIndex + 1], slice[args:end]...)
-                fmt.Println("cmd:", slice[andIndex + 1],
-                            "args:", slice[args:end],
-                            "index:", andIndex)
-                command.Stdout = os.Stdout
-                command.Stderr = os.Stdout
                 err = command.Run()
                 if err != nil {
                     break
                 }
             }
-        } else if len(pipeIndex) > 0 {
+        } else if len(pipeIndexList) > 0 {
+            if len(pipeIndexList) == 1 {
+                cmd_one := exec.Command(slice[0],slice[1:pipeIndexList[0]]...)
+                cmd_two := exec.Command(slice[pipeIndexList[0] + 1],slice[pipeIndexList[0]+2:]...)
+                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
+                fmt.Println(slice[pipeIndexList[0] + 1],slice[pipeIndexList[0]+2:])
 
+                cmd_two.Stdin, _ = cmd_one.StdoutPipe()
+                cmd_two.Stdout = os.Stdout
+
+                cmd_one.Start()
+                cmd_two.Start()
+                cmd_one.Wait()
+                cmd_two.Wait()
+            }
+            if len(pipeIndexList) == 2 {
+                cmd_one := exec.Command(slice[0],slice[1:pipeIndexList[0]]...)
+                cmd_two := exec.Command(slice[pipeIndexList[0] + 1],
+                                        slice[pipeIndexList[0]+2:pipeIndexList[1]]...)
+                cmd_three := exec.Command(slice[pipeIndexList[1] + 1],
+                                          slice[pipeIndexList[1]+2:]...)
+                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
+                fmt.Println(slice[pipeIndexList[0] + 1],
+                            slice[pipeIndexList[0]+2:pipeIndexList[1]])
+                fmt.Println(slice[pipeIndexList[1] + 1],slice[pipeIndexList[1]+2:])
+
+                cmd_two.Stdin, _ = cmd_one.StdoutPipe()
+                cmd_three.Stdin, _ = cmd_two.StdoutPipe()
+                cmd_three.Stdout = os.Stdout
+
+                cmd_one.Start()
+                cmd_two.Start()
+                cmd_three.Start()
+                cmd_one.Wait()
+                cmd_two.Wait()
+                cmd_three.Wait()
+
+            }
+            if len(pipeIndexList) == 3 {
+                cmd_one := exec.Command(slice[0],slice[1:pipeIndexList[0]]...)
+                cmd_two := exec.Command(slice[pipeIndexList[0] + 1],
+                                        slice[pipeIndexList[0]+2:pipeIndexList[1]]...)
+                cmd_three := exec.Command(slice[pipeIndexList[1] + 1],
+                                        slice[pipeIndexList[1]+2:pipeIndexList[2]]...)
+                cmd_four := exec.Command(slice[pipeIndexList[2] + 1],
+                                          slice[pipeIndexList[2]+2:]...)
+                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
+                fmt.Println(slice[pipeIndexList[0] + 1],
+                            slice[pipeIndexList[0]+2:pipeIndexList[1]])
+                fmt.Println(slice[pipeIndexList[1] + 1],
+                            slice[pipeIndexList[1]+2:pipeIndexList[2]])
+                fmt.Println(slice[pipeIndexList[2] + 1],slice[pipeIndexList[2]+2:])
+
+                cmd_two.Stdin, _ = cmd_one.StdoutPipe()
+                cmd_three.Stdin, _ = cmd_two.StdoutPipe()
+                cmd_four.Stdin, _ = cmd_three.StdoutPipe()
+                cmd_four.Stdout = os.Stdout
+
+                cmd_one.Start()
+                cmd_two.Start()
+                cmd_three.Start()
+                cmd_four.Start()
+                cmd_one.Wait()
+                cmd_two.Wait()
+                cmd_three.Wait()
+                cmd_four.Wait()
+            }
+
+//            After some consideration, I finally figured out what to do, and
+//            will be implementing a slice of exec commands to operate on next
+//            This will be done sometime in the near future
+
+/*            var end = 0
+ *            var args = 0
+ *            reader, writer := io.Pipe()
+ *            for index, pipeIndex := range(pipeIndexList) {
+ *
+ *                if end < len(pipeIndexList) - 1{
+ *                    end = pipeIndexList[index + 1]
+ *                } else {
+ *                    end = len(slice)
+ *                }
+ *                args = pipeIndex + 2
+ *                if args > len(slice) - 1 {
+ *                    args = end
+ *                }
+ *
+ *                command := exec.Command(slice[pipeIndex + 1], slice[args:end]...)
+ *                command.Stdout = writer
+ *                if index > 0 {
+ *                    command.Stdin = reader
+ *                }
+ *                if index == len(pipeIndexList) - 1 {
+ *                    command.Stdout = os.Stdout
+ *                }
+ *                err = command.Start()
+ *                err = command.Wait()
+ *                err = writer.Close()
+ *                fmt.Println("reader:", reader, "writer:", writer)
+ *                if index > 0 {
+ *                    reader.Close()
+ *                }
+ *
+ *                if err != nil {
+ *                    break
+ *                }
+ *           }
+ */
         } else {
             err = command.Run()
         }
-
     }
 
     return err
@@ -116,7 +212,7 @@ func parseInput(input string) (error, bool) {
         if field == "cd" {
             parsedSlice = append(parsedSlice, inputArray[index: index + 2])
         }
-        if field == "|" || field == "&" {
+        if field == "&" {
             parsedSlice = append(parsedSlice,inputArray[startIndex:index + 1])
             startIndex = index + 1
         }
