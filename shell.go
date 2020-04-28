@@ -32,7 +32,6 @@ func executeInput(inputArray [][]string) (error) {
     var pipeIndexList = []int{}
 
     for _, slice := range(inputArray) {
-        fmt.Println("slice:", slice)
         if slice[0] == "cd" {
             err = changeDirectory(slice)
             if err != nil {
@@ -85,8 +84,6 @@ func executeInput(inputArray [][]string) (error) {
             if len(pipeIndexList) == 1 {
                 cmd_one := exec.Command(slice[0],slice[1:pipeIndexList[0]]...)
                 cmd_two := exec.Command(slice[pipeIndexList[0] + 1],slice[pipeIndexList[0]+2:]...)
-                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
-                fmt.Println(slice[pipeIndexList[0] + 1],slice[pipeIndexList[0]+2:])
 
                 cmd_two.Stdin, _ = cmd_one.StdoutPipe()
                 cmd_two.Stdout = os.Stdout
@@ -102,10 +99,6 @@ func executeInput(inputArray [][]string) (error) {
                                         slice[pipeIndexList[0]+2:pipeIndexList[1]]...)
                 cmd_three := exec.Command(slice[pipeIndexList[1] + 1],
                                           slice[pipeIndexList[1]+2:]...)
-                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
-                fmt.Println(slice[pipeIndexList[0] + 1],
-                            slice[pipeIndexList[0]+2:pipeIndexList[1]])
-                fmt.Println(slice[pipeIndexList[1] + 1],slice[pipeIndexList[1]+2:])
 
                 cmd_two.Stdin, _ = cmd_one.StdoutPipe()
                 cmd_three.Stdin, _ = cmd_two.StdoutPipe()
@@ -127,12 +120,6 @@ func executeInput(inputArray [][]string) (error) {
                                         slice[pipeIndexList[1]+2:pipeIndexList[2]]...)
                 cmd_four := exec.Command(slice[pipeIndexList[2] + 1],
                                           slice[pipeIndexList[2]+2:]...)
-                fmt.Println(slice[0],slice[1:pipeIndexList[0]])
-                fmt.Println(slice[pipeIndexList[0] + 1],
-                            slice[pipeIndexList[0]+2:pipeIndexList[1]])
-                fmt.Println(slice[pipeIndexList[1] + 1],
-                            slice[pipeIndexList[1]+2:pipeIndexList[2]])
-                fmt.Println(slice[pipeIndexList[2] + 1],slice[pipeIndexList[2]+2:])
 
                 cmd_two.Stdin, _ = cmd_one.StdoutPipe()
                 cmd_three.Stdin, _ = cmd_two.StdoutPipe()
@@ -221,8 +208,6 @@ func parseInput(input string) (error, bool) {
     if len(parsedSlice) == 0 {
         parsedSlice = append(parsedSlice, inputArray)
     }
-
-    fmt.Println("parsedSlice:", parsedSlice)
 
     err = executeInput(parsedSlice)
 
