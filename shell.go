@@ -1,6 +1,6 @@
 // shell.go
 // Dylan Palmieri
-// Custom shell for CS321 Operating Systems
+// Basic shell for CS321 Operating Systems
 
 package main
 
@@ -23,12 +23,14 @@ func changeDirectory(wordArray []string) (error) {
     }
 
     return err
-
 }
 
 func executeInput(inputArray [][]string) (error) {
     var err (error) = nil
-    var andIndex = 0
+    var andIndexList = []int{}
+    andIndexList = append(andIndexList, -1)
+    var pipeIndex = []int{}
+    //pipeIndex = append(pipeIndex, 0)
 
     for _, slice := range(inputArray) {
         fmt.Println("slice:", slice)
@@ -44,8 +46,6 @@ func executeInput(inputArray [][]string) (error) {
         command.Stdout = os.Stdout
         command.Stderr = os.Stdout
 
-        if slice[len(slice)-1] == "|" {
-        }
         if slice[len(slice)-1] == "&" {
             command.Stdout = nil
             if len(slice) > 2 {
@@ -56,24 +56,42 @@ func executeInput(inputArray [][]string) (error) {
         }
         for index, item := range(slice) {
             if item == "&&" {
-                andIndex = index
+                andIndexList = append(andIndexList, index)
+            }
+            if item == "|" {
+                pipeIndex = append(pipeIndex, index)
             }
         }
 
-        if andIndex != 0 {
-            command_one := exec.Command(slice[0], slice[1:andIndex]...)
-            fmt.Println("cmd:", slice[0], "args:", slice[1:andIndex], "index:", andIndex)
-            command_one.Stdout = os.Stdout
-            command_one.Stderr = os.Stdout
-            command_two := exec.Command(slice[andIndex + 1], slice[andIndex + 2:]...)
-            fmt.Println("cmd:", slice[andIndex + 1], "args:", slice[andIndex + 2:])
-            command_two.Stdout = os.Stdout
-            command_two.Stderr = os.Stdout
-            err = command_one.Run()
-            if err == nil {
-                err = command_two.Run()
+        if len(andIndexList) > 1 { // ls && ls
+            fmt.Println("andIndexList:", andIndexList)
+            var end = 0
+            var args = 0
+            for index, andIndex := range(andIndexList) {
+                fmt.Println("End:", end, "len:", len(andIndexList))
+                if end < len(andIndexList) - 1{
+                    end = andIndexList[index + 1]
+                } else {
+                    end = len(slice)
+                }
+                args = andIndex + 2
+                fmt.Println("args:", args, "end:", end)
+                if args > len(slice) - 1 {
+                    args = end
+                }
+                command := exec.Command(slice[andIndex + 1], slice[args:end]...)
+                fmt.Println("cmd:", slice[andIndex + 1],
+                            "args:", slice[args:end],
+                            "index:", andIndex)
+                command.Stdout = os.Stdout
+                command.Stderr = os.Stdout
+                err = command.Run()
+                if err != nil {
+                    break
+                }
             }
-            andIndex = 0
+        } else if len(pipeIndex) > 0 {
+
         } else {
             err = command.Run()
         }
