@@ -21,7 +21,7 @@
 # Things a shell has
 
 * History
-* Environment Variables (PATH
+* Environment Variables (PATH)
 * Prompt
 * Input buffer
 * Output buffer
@@ -42,6 +42,7 @@
 - [ ] Builtin functions
     - [x] exit
     - [x] cd
+    - [ ] complete
 - [ ] Input "Parsing"
 - [x] History logging
 - [x] Foreground and Background execution (thread safety warning?)
