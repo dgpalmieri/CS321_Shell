@@ -6,7 +6,7 @@ goShell is, believe it or not, a shell implemented in golang. Currently very und
 
 * goShell does not support autocompletions
 * goShell only supports the following special characters, and only one type of argument per command:
-    * |  - pipe output to command's input
-    * && - execute command one and command two
+    * |  - pipe output to command's input (only up to 4 pipes supported, arbitrary number soon)
+    * && - execute command one and command two (arbitrary number supported)
     * &  - execute command in background (must be last character in command)
 
