@@ -28,6 +28,7 @@
 * Builtin functions
     * cd
     * exit
+    * complete
 * directory location
 
 # Design
@@ -42,8 +43,8 @@
 - [ ] Builtin functions
     - [x] exit
     - [x] cd
-    - [ ] complete
-- [ ] Input "Parsing"
+- [x] Input "Parsing"
+    - [ ] Fix piping
 - [x] History logging
 - [x] Foreground and Background execution (thread safety warning?)
 
