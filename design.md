@@ -40,11 +40,11 @@
 
 # Feature Ranking
 
-- [ ] Builtin functions
+- [x] Builtin functions
     - [x] exit
     - [x] cd
 - [x] Input "Parsing"
-    - [ ] Fix piping
+    - [x] Fix piping
 - [x] History logging
 - [x] Foreground and Background execution (thread safety warning?)
 
